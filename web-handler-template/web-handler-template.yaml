@@ -5,7 +5,7 @@ kind: Template
 metadata:
   name: v1beta3-demo
   title: Web Handler Template
-  description: Generates a barebones project for the sp-scheduler service.
+  description: Generates a barebones web-handler service.
 spec:
   owner: Sailpoint
   type: service
