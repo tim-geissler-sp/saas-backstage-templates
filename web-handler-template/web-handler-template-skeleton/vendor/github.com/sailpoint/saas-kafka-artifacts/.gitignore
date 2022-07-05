@@ -1,0 +1,14 @@
+build
+.idea
+*.iml
+.gradle
+.DS_Store
+/debug.log
+velocity.log*
+.classpath
+.settings
+.project
+out
+bin
+.vscode
+**/IdnTopic.java

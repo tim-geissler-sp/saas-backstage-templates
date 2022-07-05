@@ -1,0 +1,16 @@
+{
+	"type": "std:test-connection",
+	"outputMode": "single", 
+	"inputSchema": {
+		"type": "object",
+		"additionalProperties": false
+	},
+	"inputExample": {
+	},
+	"outputSchema": {
+		"type": "object",
+		"additionalProperties": false
+	},
+	"outputExample": {
+	}
+}

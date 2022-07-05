@@ -1,0 +1,23 @@
+{
+	"type": "std:entitlement:list",
+	"outputMode": "stream",
+	"inputSchema": {
+		"type":"object",
+		"additionalProperties": false,
+		"properties": {
+			"type": {
+				"type": "string"
+			}
+		}
+	},
+	"inputExample": {},
+	"outputSchema": { "$ref": "http://connect.sailpoint.com/schemas/object_output" },
+	"outputExample": {
+		"identity": "engineering",
+		"uuid": "5678",
+		"attributes": {
+			"name": "Engineering Team",
+			"description": "SailPoint's awesome engineering team"
+		}
+	}
+}

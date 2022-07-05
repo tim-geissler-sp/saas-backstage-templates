@@ -1,0 +1,34 @@
+{
+  "$id": "http://connect.sailpoint.com/schemas/object_key",
+	"type":"object",
+  "additionalProperties": false,
+  "oneOf": [
+    { "required": ["simple"] },
+    { "required": ["compound"] }
+  ],
+  "properties": {
+    "simple": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"]
+    },
+    "compound": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "lookupId": {
+          "type": "string"
+        },
+        "uniqueId": {
+          "type": "string"
+        }
+      },
+      "required": ["lookupId", "uniqueId"]
+    }
+  }
+}

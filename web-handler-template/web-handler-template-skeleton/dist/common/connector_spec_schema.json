@@ -1,0 +1,262 @@
+{
+	"$id": "http://connect.sailpoint.com/schemas/connector_specification",
+	"type": "object",
+	"properties": {
+		"name": {
+			"type": "string",
+			"minLength": 3
+		},
+		"visibility": {
+			"type": "string",
+			"enum": [
+				"public",
+				"private"
+			]
+		},
+		"topology": {
+			"type": "string",
+			"enum": [
+				"global",
+				"runtime"
+			]
+		},
+		"commands": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"keyType": {
+			"type": "string",
+			"enum": [
+				"compound",
+				"simple",
+				""
+			]
+		},
+		"sourceConfig": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"sectionTitle": {
+						"type": "string"
+					},
+					"sectionHelpMessage": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"section"
+						]
+					},
+					"items": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"key": {
+									"type": "string"
+								},
+								"required": {
+									"type": "boolean"
+								},
+								"placeholder": {
+									"type": "string"
+								},
+								"helpText": {
+									"type": "string"
+								},
+								"label": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string",
+									"enum": [
+										"text",
+										"number",
+										"secret",
+										"textarea",
+										"secrettextarea",
+										"checkbox"
+									]
+								}
+							},
+							"required": [
+								"key",
+								"label",
+								"type"
+							]
+						}
+					}
+				}
+			}
+		},
+		"sourceConfigInitialValues": {
+			"type": [
+				"object",
+				"null"
+			]
+		},
+		"accountSchema": {
+			"oneOf": [
+				{
+					"$ref": "http://connect.sailpoint.com/schemas/account_schema"
+				},
+				{
+					"type": "null"
+				}
+			]
+		},
+		"entitlementSchemas": {
+			"type": [
+				"array",
+				"null"
+			],
+			"items": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"displayAttribute": {
+						"type": "string"
+					},
+					"identityAttribute": {
+						"type": "string"
+					},
+					"attributes": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"accountCreateTemplate": {
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {
+				"fields": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"key": {
+								"type": "string"
+							},
+							"label": {
+								"type": "string"
+							},
+							"type": {
+								"type": "string"
+							},
+							"required": {
+								"type": "boolean"
+							},
+							"initialValue" : {
+								"oneOf": [
+									{
+										"type": "object",
+										"properties": {
+											"type": {
+												"const": "static"
+											},
+											"attributes": {
+												"type": "object",
+												"properties": {
+													"value": {
+														"type": "string"
+													}
+												},
+												"required": ["value"]
+											}
+										},
+										"required": ["attributes"]
+									},
+									{
+										"type": "object",
+										"properties": {
+											"type": {
+												"const": "identityAttribute"
+											},
+											"attributes": {
+												"type": "object",
+												"properties": {
+													"name": {
+														"type": "string"
+													}
+												},
+												"required": ["name"]
+											}
+										},
+										"required": ["attributes"]
+									},
+									{
+										"type": "object",
+										"properties": {
+											"type": {
+												"const": "generator"
+											},
+											"attributes": {
+												"type": "object",
+												"properties": {
+													"name": {
+														"type": "string",
+														"enum": [
+															"Create Password",
+															"Create Unique Account ID"
+														]
+													},
+													"maxSize": {
+														"type": "string"
+													},
+													"maxUniqueChecks": {
+														"type": "string"
+													},
+													"template": {
+														"type": "string"
+													}
+												},
+												"required": ["name"]
+											}
+										},
+										"required": ["attributes"]
+									}
+								]
+							}
+						},
+						"required": [
+							"key",
+							"label",
+							"type",
+							"initialValue"
+						]
+					}
+				}
+			}
+		}
+	},
+	"required": [
+		"name",
+		"visibility",
+		"topology",
+		"commands",
+		"sourceConfig"
+	]
+}

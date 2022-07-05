@@ -1,0 +1,15 @@
+{
+	"schema": 1,
+	"tests": [
+	],
+	"notifications": {
+		"slack": {
+			"rooms": [ "team-eng-platform-connectivity-jnk" ],
+			"failureRooms": [ "team-eng-platform-connectivity-jnk" ]
+		},
+		"email": {
+			"addresses": [ "platform-connectivity@sailpoint.com" ],
+			"emailOnlyOnFailure": true
+		}
+	}
+}

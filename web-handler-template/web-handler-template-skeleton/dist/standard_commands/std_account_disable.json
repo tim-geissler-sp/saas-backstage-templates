@@ -1,0 +1,23 @@
+{
+	"type": "std:account:disable",
+	"outputMode": "single",
+	"inputSchema": { "$ref": "http://connect.sailpoint.com/schemas/object_input" },
+	"inputExample": {
+    "key": {
+      "simple": {
+        "id": "john.doe"
+      }
+    }
+	},
+	"outputSchema": { "$ref": "http://connect.sailpoint.com/schemas/object_output" },
+	"outputExample": {
+    "key": {
+      "simple": {"id": "john.doe"}
+    },
+		"attributes": {
+			"first": "john",
+			"last": "doe",
+			"email": "john.doe@example.com"
+		}
+	}
+}

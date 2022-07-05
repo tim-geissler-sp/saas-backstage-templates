@@ -1,0 +1,27 @@
+{
+  "$id": "http://connect.sailpoint.com/schemas/object_output",
+	"type": "object",
+  "properties": {
+    "identity": {
+      "type": "string"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "key": { "$ref": "http://connect.sailpoint.com/schemas/object_key" },
+    "type": {
+      "type": "string"
+    },
+    "disabled": {
+      "type": "boolean"
+    },
+    "locked": {
+      "type": "boolean"
+    },
+    "attributes": {
+      "type": "object"
+    }
+  },
+  "required": ["attributes"],
+  "oneOf": [ { "required": ["identity", "uuid"] }, {"required": ["key"] } ]
+}

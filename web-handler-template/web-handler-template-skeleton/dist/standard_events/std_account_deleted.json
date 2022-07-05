@@ -1,0 +1,20 @@
+{
+    "type": "std:account:deleted",
+    "schema": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"identity": {
+				"type": "string"
+            },
+            "uuid": {
+                "type": "string"
+            }
+		},
+		"required": ["identity"]
+    },
+    "example": {
+		"identity": "john.doe",
+		"uuid": "1234"
+    }
+}

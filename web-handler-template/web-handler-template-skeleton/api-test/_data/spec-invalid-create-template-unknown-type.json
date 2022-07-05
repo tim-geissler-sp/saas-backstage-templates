@@ -1,0 +1,127 @@
+{
+    "name": "Test Connector",
+    "visibility": "private",
+    "topology": "runtime",
+    "commands": [
+        "std:account:list",
+        "std:account:read",
+        "std:entitlement:list",
+        "std:entitlement:read",
+        "std:test-connection"
+    ],
+    "keyType": "",
+    "sourceConfig": [
+        {
+            "items": [
+                {
+                    "key": "token",
+                    "label": "Token",
+                    "type": "text"
+                }
+            ],
+            "type": "section"
+        }
+    ],
+    "sourceConfigInitialValues": null,
+    "accountSchema": {
+        "attributes": [
+            {
+                "description": "The name of the account - typical username etc",
+                "name": "identity",
+                "type": "string"
+            },
+            {
+                "description": "The display name of the user associated with the account",
+                "name": "displayName",
+                "type": "string"
+            },
+            {
+                "description": "The groups, roles etc. that reference account group objects",
+                "entitlement": true,
+                "managed": true,
+                "multi": true,
+                "name": "groups",
+                "schemaObjectType": "group",
+                "type": "string"
+            }
+        ],
+        "displayAttribute": "displayName",
+        "groupAttribute": "groups",
+        "identityAttribute": "identity"
+    },
+    "entitlementSchemas": [
+        {
+            "attributes": [
+                {
+                    "description": "Unique ID of the role and it's assignment scope",
+                    "name": "id",
+                    "type": "string"
+                },
+                {
+                    "description": "Name of the role",
+                    "name": "name",
+                    "type": "string"
+                }
+            ],
+            "displayAttribute": "name",
+            "identityAttribute": "id",
+            "type": "group"
+        }
+    ],
+    "accountCreateTemplate": {
+        "fields": [
+            {
+                "initialValue": {
+                    "attributes": {
+                        "value": "11200 Four Point Dr"
+                    },
+                    "type": "unknown"
+                },
+                "key": "address",
+                "label": "The address of the person",
+                "required": false,
+                "type": "string"
+            },
+            {
+                "initialValue": {
+                    "attributes": {
+                        "name": "email"
+                    },
+                    "type": "identityAttribute"
+                },
+                "key": "email",
+                "label": "Email",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "initialValue": {
+                    "attributes": {
+                        "name": "Create Password"
+                    },
+                    "type": "generator"
+                },
+                "key": "password",
+                "label": "Password",
+                "required": "true",
+                "type": "string"
+            },
+            {
+                "initialValue": {
+                    "attributes": {
+                        "maxSize": "100",
+                        "maxUniqueChecks": "5",
+                        "name": "Create Unique Account ID",
+                        "template": "$(firstname).$(lastname)$(uniqueCounter)"
+                    },
+                    "type": "generator"
+                },
+                "key": "username",
+                "label": "Username",
+                "required": true,
+                "type": "string"
+            }
+        ]
+    },
+    "createDisabled": false
+}

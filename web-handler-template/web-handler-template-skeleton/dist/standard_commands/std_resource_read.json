@@ -1,0 +1,48 @@
+{
+	"type": "std:resource:read",
+	"outputMode": "single",
+	"inputSchema": {
+		"type": "object",
+		"additionalProperties": true,
+		"properties": {
+			"path": {
+				"type": "string"
+			},
+			"relativePath":{
+				"type": "string"
+			}
+		},
+		"required": ["path"]
+	},
+	"inputExample": {
+		"path": "\\\\folder1\\folder11"
+	},
+	"outputSchema": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"path": {
+				"type": "string"
+			},
+			"children": {
+				"type": "array"
+			}			
+		},
+		"required": ["path", "children"]
+	},
+	"outputExample": {
+		"path":  "\\\\folder1\\folder11",
+		"children": [
+			{
+				"Name":"folder111",
+				"Path":"\\\\folder1\\folder11\\folder111",
+				"UniqueId": "e0c69d50-a2d5-42ac-a600-c910c5203e5f"
+			},
+			{
+				"Name":"folder111",
+				"Path":"\\\\folder1\\folder11\\folder112",
+				"UniqueId":"1f256805-4bdc-4ede-8f5c-11584023fbdd"
+			}			
+		]		
+	}
+}

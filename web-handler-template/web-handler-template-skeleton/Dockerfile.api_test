@@ -1,0 +1,7 @@
+FROM golang:1.17.1-alpine3.14
+
+RUN apk add --no-cache iproute2 build-base
+RUN GOBIN=/app/bin GOOS=linux go install github.com/kisielk/errcheck@v1.6.0
+
+WORKDIR /app
+COPY . .

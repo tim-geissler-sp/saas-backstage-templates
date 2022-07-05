@@ -1,0 +1,18 @@
+{
+	"type": "std:account:delete",
+	"outputMode": "single",
+	"inputSchema": { "$ref": "http://connect.sailpoint.com/schemas/object_input" },
+	"inputExample": {
+		"key": {
+      "compound": {
+        "lookupId": "12#",
+        "uniqueId": "super"
+      }
+    }
+	},
+	"outputSchema": {
+		"type": "object",
+		"additionalProperties": false
+	},
+	"outputExample": { }
+}

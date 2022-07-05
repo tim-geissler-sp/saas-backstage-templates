@@ -1,0 +1,24 @@
+{
+	"type": "std:spec:read",
+	"outputMode": "single",
+	"inputSchema": {
+		"additionalProperties": false
+	},
+	"outputSchema": {
+    "type": "object",
+    "aditionalProperties": false,
+    "properties": {
+      "specification": { "$ref": "http://connect.sailpoint.com/schemas/connector_specification" }
+    },
+    "required": ["specification"]
+  },
+	"outputExample": {
+    "specification": {
+      "name": "example",
+      "visibility": "public",
+      "topology": "runtime",
+      "commands": [],
+      "sourceConfig": []
+    }
+  }
+}

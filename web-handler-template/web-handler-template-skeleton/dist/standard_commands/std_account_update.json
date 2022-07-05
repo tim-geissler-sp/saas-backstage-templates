@@ -1,0 +1,90 @@
+{
+	"type": "std:account:update",
+	"outputMode": "single",
+	"inputSchema": {
+		"type": "object",
+		"properties": {
+			"identity": {
+				"type": "string"
+			},
+      	"key": { "$ref": "http://connect.sailpoint.com/schemas/object_key" },
+			"changes": {
+				"type": "array",
+				"items": {
+					"oneOf": [
+						{
+							"type": "object",
+							"properties": {
+							"op": {
+								"pattern": "^Add$"
+							},
+							"attribute": {
+								"type": "string"
+							},
+							"value": {}
+							},
+							"required": ["op", "attribute", "value"]
+						},
+						{
+							"type": "object",
+							"properties": {
+							"op": {
+								"pattern": "^Set$"
+							},
+							"attribute": {
+								"type": "string"
+							},
+							"value": {}
+							},
+							"required": ["op", "attribute", "value"]
+						},
+						{
+							"type": "object",
+							"properties": {
+							"op": {
+								"pattern": "^Remove$"
+							},
+							"attribute": {
+								"type": "string"
+							}
+							},
+							"required": ["op", "attribute"]
+						}
+					]
+				}
+			}
+		},
+    "anyOf": [
+      { "required": ["key", "changes"] },
+      { "required": ["identity", "changes"] }
+    ]
+	},
+	"inputExample": {
+		"identity": "john.doe",
+		"changes": [
+			{"op": "Add", "attribute": "groups", "value": ["Group1", "Group2"]},
+			{"op": "Set", "attribute": "phone", "value": 2223334444},
+			{"op": "Remove", "attribute": "location"}
+		]
+	},
+	"outputSchema": {
+		"type": "object",
+		"oneOf": [{
+			"$ref": "http://connect.sailpoint.com/schemas/object_output"
+		},{
+			"type" : "object",
+			"additionalProperties": false,
+			"properties": {
+			}
+		}]
+  	},
+	"outputExample": {
+		"identity": "john.doe",
+		"uuid": "1234",
+		"attributes": {
+			"first": "john",
+			"last": "doe",
+			"email": "john.doe@example.com"
+		}
+	}
+}

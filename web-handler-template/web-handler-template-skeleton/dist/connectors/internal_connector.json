@@ -1,0 +1,21 @@
+{
+	"id": "internal",
+	"name": "Internal Debug Connector",
+	"visibility": "private",
+	"topology": "internal",
+	"commands": [
+		"std:account:list", 
+		"std:account:create",
+		"std:account:read",
+		"std:account:update",
+		"std:account:delete",
+		"std:account:unlock",
+		"std:account:enable",
+		"std:account:disable",
+		"std:authenticate",
+		"std:entitlement:list", 
+		"std:entitlement:read",
+		"std:test-connection"
+	],
+	"sourceConfig": []
+}

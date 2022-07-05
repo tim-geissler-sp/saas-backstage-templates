@@ -1,0 +1,20 @@
+{
+	"type": "std:account:read",
+	"outputMode": "single",
+	"inputSchema": { "$ref": "http://connect.sailpoint.com/schemas/object_input" },
+	"inputExample": {
+		"identity": "john.doe"
+	},
+	"outputSchema": { "$ref": "http://connect.sailpoint.com/schemas/object_output" },
+	"outputExample": {
+    "key": {
+      "simple": { "id": "123" }
+    },
+    "identity": "123",
+		"attributes": {
+			"first": "john",
+			"last": "doe",
+			"email": "john.doe@example.com"
+		}
+	}
+}

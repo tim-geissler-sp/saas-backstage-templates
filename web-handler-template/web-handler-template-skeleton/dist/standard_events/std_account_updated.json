@@ -1,0 +1,28 @@
+{
+    "type": "std:account:updated",
+    "schema": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"identity": {
+				"type": "string"
+			},
+			"uuid": {
+				"type": "string"
+			},
+			"attributes": {
+				"type": "object"
+			}
+		},
+		"required": ["identity"]
+    },
+    "example": {
+		"identity": "john.doe",
+		"uuid": "1234",
+		"attributes": {
+			"first": "john",
+			"last": "doe",
+			"email": "john.doe@example.com"
+		}
+    }
+}

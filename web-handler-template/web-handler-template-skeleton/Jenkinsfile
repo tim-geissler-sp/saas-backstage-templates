@@ -1,0 +1,329 @@
+/*
+ * Copyright (C) 2020 SailPoint Technologies, Inc.  All rights reserved.
+ */
+@Library('sailpoint/jenkins-release-utils')_
+
+/**
+ * Jenkins release pipeline for sp-connect.
+ */
+pipeline {
+	agent none
+
+	options {
+		// Aborts job if run time is over 24 hours
+		timeout(time: 24, unit: 'HOURS')
+
+		// Add timestamps to console output
+		timestamps()
+
+		// Don't allow concurrent builds to run
+		disableConcurrentBuilds()
+
+		// Keep builds for a year + 30 days.
+		buildDiscarder(logRotator(daysToKeepStr: '395'))
+	}
+
+	triggers {
+		// Poll for changes every 5 minutes.
+		pollSCM('H/5 * * * *')
+	}
+
+	environment {
+		// The scrum which owns this component
+		JIRA_PROJECT = "PLTCONN"
+
+		// The component name in Jira for the deployment ticket
+		JIRA_COMPONENT = "sp-connect"
+
+		// The name of the build artifact to generate
+		BUILD_NUMBER = "${env.BUILD_NUMBER}"
+
+		// The maximum amount of time (in minutes) to wait for a build
+		BUILD_TIMEOUT = 20
+
+		// The maximum amount of time (in minutes) for tests to take before they are auto failed.
+		TEST_TIMEOUT = 10
+
+		// The maximum amount of time (in minutes) to wait for a deploy
+		DEPLOY_TIMEOUT = 30
+
+		// Which room to report successes & failures too.
+		SLACK_CHANNEL = "#team-eng-platform-connectivity-jnk"
+
+		// The branch releases can be cut from.
+		RELEASE_BRANCH = "master"
+
+		// The name of service being released
+		SERVICE_NAME = "sp-connect"
+
+		// The Github repo name
+		GITHUB_REPO_NAME = "sailpoint/saas-sp-connect"
+
+		// The GitHub url
+		GITHUB_REPO = "git@github.com:sailpoint/saas-sp-connect.git"
+	}
+
+	stages {
+		stage('Build sp-connect') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+			steps {
+				echo "${env.SERVICE_NAME} service release pipeline for ${env.BUILD_NUMBER} is starting."
+				sendSlackNotification(
+						env.SLACK_CHANNEL,
+						"${env.SERVICE_NAME} service release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> is starting.",
+						utils.NOTIFY_START
+				)
+
+				script {
+					node {
+						label 'devaws'
+
+						try {
+							// Check out code from repository. NOTE: This will be defined in the Jenkins job
+							checkout scm
+
+							echo "Starting build of ${env.SERVICE_NAME}"
+
+							sh("make VERSION=${env.BUILD_NUMBER} docker/push")
+
+							//Git Config
+							sh "git config --global user.email jenkins@construct.identitysoon.com"
+							sh "git config --global user.name Jenkins"
+
+							// Create and push a git tag for build
+							TAG_NAME= "jenkins/${env.SERVICE_NAME}/${env.BUILD_NUMBER}"
+							sh "git tag -a -f -m 'Built by Pipeline' ${TAG_NAME}"
+							sh "git push origin tag ${TAG_NAME}"
+						} finally {
+							// Always clean up the workspace
+							deleteDir()
+						}
+					}
+				}
+			}
+		}
+
+		stage('Bermuda deploy') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					spConnectDeploy('bermuda')
+				}
+			}
+		}
+
+		stage('Bermuda verify') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					utils.addJavaToPath()
+					checkout scm
+					spConnectVerifyDev('us-west-2', 'bermuda', 'https://api-e2e-ber.api.cloud.sailpoint.com')
+				}
+			}
+		}
+
+		stage('Lighthouse deploy') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					spConnectDeploy('lighthouse')
+				}
+			}
+		}
+
+		stage('Lighthouse verify') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					utils.addJavaToPath()
+					checkout scm
+					spConnectVerifyDev('us-east-1', 'lighthouse', 'https://api-e2e-light.api.cloud.sailpoint.com')
+				}
+			}
+		}
+
+		stage('Create Deployment Ticket') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			agent {
+				label 'devaws'
+			}
+
+			steps {
+				script {
+					def currentlyDeployedBuildNumberResult = getCurrentlyDeployedBuild([release_component: "${env.SERVICE_NAME}", is_dev: "true", return_initial_commit_status: "true"])
+					def currentlyDeployedBuildNumber = currentlyDeployedBuildNumberResult[0]
+					def isInitCommit = currentlyDeployedBuildNumberResult[1]
+					def srcTag = isInitCommit ? currentlyDeployedBuildNumber : "jenkins/${env.SERVICE_NAME}/${currentlyDeployedBuildNumber}"
+					createC3P0DeployTicket([
+							project          : env.JIRA_PROJECT,
+							repository       : env.GITHUB_REPO_NAME,
+							src_tag          : "${srcTag}",
+							dest_tag         : "jenkins/${env.SERVICE_NAME}/${env.BUILD_NUMBER}",
+							application      : "atlas",
+							build_number     : env.BUILD_NUMBER,
+							components       : env.JIRA_COMPONENT,
+							release_component: env.JIRA_COMPONENT
+					])
+				}
+
+				echo "All done, deployment is ready for approval"
+			}
+		}
+
+		stage('Deploy to other pods') {
+			when {
+				branch env.RELEASE_BRANCH
+			}
+
+			parallel {
+				stage('us-east-1 deploy') {
+					agent {
+						label 'devaws'
+					}
+					steps {
+						script {
+							spConnectDeploy('stradbroke')
+						}
+					}
+				}
+				stage('Perf deploy') {
+					agent {
+						label 'devaws'
+					}
+					steps {
+						script {
+							spConnectDeploy('dev01-useast1')
+						}
+					}
+				}
+				stage('Megapod deploy') {
+					agent {
+						label 'devaws'
+					}
+					steps {
+						script {
+							spConnectDeploy('megapod-useast1')
+						}
+					}
+				}
+			}
+		}
+	}
+
+	post {
+		success {
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_NAME} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was successful.",
+					utils.NOTIFY_SUCCESS
+			)
+		}
+		failure {
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_NAME} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed.",
+					utils.NOTIFY_FAILURE
+			)
+		}
+		aborted {
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_NAME} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> was aborted.",
+					utils.NOTIFY_ABORTED
+			)
+		}
+	}
+}
+
+def spConnectVerifyDev(region, podName, orgUrl) {
+	sendSlackNotification(
+			env.SLACK_CHANNEL,
+			"Verification of ${podName} is starting.",
+			utils.NOTIFY_START
+	)
+	def attempts = 0
+	waitUntil {
+		try {
+			env.AWS_REGION="${region}"
+			env.ATLAS_JWT_KEY_PARAM_NAME='/service/oathkeeper/dev/encryption_string'
+			
+			withCredentials([usernamePassword(credentialsId: 'support-user', usernameVariable: 'username', passwordVariable: 'password')]) {
+				timeout(time: Integer.valueOf(env.TEST_TIMEOUT), unit: 'MINUTES') {
+					echo "Verify build ${env.BUILD_NUMBER} on ${podName}"
+					sh """
+						make docker/api-test \
+						url="${orgUrl}"  \
+						username="${username}" \
+						password="${password}" \
+						env="dev"
+					"""
+				}
+			}
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"Verification of ${podName} is successful.",
+					utils.NOTIFY_SUCCESS
+			)
+			return true
+		} catch(error) {
+			echo "${podName} verification attempt failed with error ${error}"
+			attempts++
+
+			sendSlackNotification(
+					env.SLACK_CHANNEL,
+					"${env.SERVICE_NAME} release pipeline for <${env.BUILD_URL}|${env.BUILD_NUMBER}> failed on ${podName} ${attempts} time(s), should I try again?<br/>Error: ${error}",
+					utils.NOTIFY_FAILURE
+			)
+
+			utils.promptToRetryTests(utils.BERMUDA_POD, utils.VERIFICATION_STEP, attempts)
+			return false
+		} finally {
+		}
+	}
+}
+
+def spConnectDeploy(podName) {
+	echo "Deploying ${env.SERVICE_NAME} build ${env.BUILD_NUMBER} to ${podName}."
+	sendSlackNotification(
+			env.SLACK_CHANNEL,
+			"Deploy of ${env.SERVICE_NAME} <${env.BUILD_URL}|${env.BUILD_NUMBER}> to ${podName} is starting.",
+			utils.NOTIFY_START
+	)
+
+	// Params: pod, serviceType, version, (Optionals) deployTimeout, dryDockHost, uiModuleName, uiModuleType
+	drydockDeploy(podName, env.SERVICE_NAME, env.BUILD_NUMBER, Integer.valueOf(env.DEPLOY_TIMEOUT))
+}

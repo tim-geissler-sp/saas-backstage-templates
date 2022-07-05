@@ -1,0 +1,32 @@
+{
+	"type": "std:account:discover-schema",
+	"outputMode": "single",
+	"inputSchema": {
+		"type": "object",
+		"additionalProperties": false
+	},
+	"inputExample": {
+	},
+	"outputSchema": { "$ref": "http://connect.sailpoint.com/schemas/account_schema" },
+	"outputExample": {
+        "displayAttribute": "firstName",
+        "identityAttribute": "email",
+        "attributes": [
+            {
+                "description": "First name of the account",
+                "name": "firstName",
+                "type": "string"
+            },
+            {
+                "description": "Last name of the account",
+                "name": "lastName",
+                "type": "string"
+            },
+            {
+                "description": "Email of the account",
+                "name": "email",
+                "type": "string"
+            }
+        ]
+    }
+}

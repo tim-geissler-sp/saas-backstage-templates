@@ -1,0 +1,42 @@
+{
+	"$id":"http://connect.sailpoint.com/schemas/account_schema",
+	"type":"object",
+	"properties":{
+		"displayAttribute":{
+			"type":"string"
+		},
+		"groupAttribute":{
+			"type":"string"
+		},
+		"identityAttribute":{
+			"type":"string"
+		},
+		"attributes":{
+			"type":"array",
+			"items":{
+				"type":"object",
+				"properties":{
+					"name":{
+						"type":"string"
+					},
+					"type":{
+						"type":"string",
+						"enum": ["string", "boolean", "int", "long"]
+					},
+					"description":{
+						"type":"string"
+					},
+					"entitlement":{
+						"type":"boolean"
+					},
+					"managed":{
+						"type":"boolean"
+					},
+					"multi":{
+						"type":"boolean"
+					}
+				}
+			}
+		}
+	}
+}

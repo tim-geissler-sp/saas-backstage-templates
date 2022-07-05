@@ -1,0 +1,16 @@
+{
+  "$id": "http://connect.sailpoint.com/schemas/object_input",
+	"type":"object",
+  "additionalProperties": false,
+  "anyOf": [
+    { "required": ["key"] },
+    { "required": ["identity"] }
+  ],
+  "properties": {
+    "identity": { "type": "string" },
+    "key": { "$ref": "http://connect.sailpoint.com/schemas/object_key" },
+    "type": {
+      "type": ["string", "null"]
+    }
+  }
+}

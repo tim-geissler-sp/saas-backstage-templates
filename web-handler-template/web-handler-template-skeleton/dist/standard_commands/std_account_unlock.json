@@ -1,0 +1,18 @@
+{
+	"type": "std:account:unlock",
+	"outputMode": "single",
+	"inputSchema": { "$ref": "http://connect.sailpoint.com/schemas/object_input" },
+	"inputExample": {
+		"identity": "john.doe"
+	},
+	"outputSchema": { "$ref": "http://connect.sailpoint.com/schemas/object_output" },
+	"outputExample": {
+		"identity": "john.doe",
+		"uuid": "1234",
+		"attributes": {
+			"first": "john",
+			"last": "doe",
+			"email": "john.doe@example.com"
+		}
+	}
+}
